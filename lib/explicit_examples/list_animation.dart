@@ -23,10 +23,10 @@ class _ListAnimationState extends State<ListAnimation>
 
     positionAnimations = List.generate(
         itemCount,
-        (index) => Tween(begin: const Offset(-1, 0), end: Offset.zero)
-            .animate(controller));
-
-    Tween(begin: const Offset(-1, 0), end: Offset.zero).animate(controller);
+        (index) => Tween(begin: const Offset(-1, 0), end: Offset.zero).animate(
+            CurvedAnimation(
+                parent: controller,
+                curve: Interval(index * (1 / itemCount), 1))));
   }
 
   @override
@@ -48,7 +48,11 @@ class _ListAnimationState extends State<ListAnimation>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          controller.forward();
+          if (controller.isCompleted) {
+            controller.reverse();
+          } else {
+            controller.forward();
+          }
         },
         child: const Icon(Icons.done),
       ),
