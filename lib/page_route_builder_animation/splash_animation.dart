@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SplashAnimation extends StatefulWidget {
@@ -19,16 +20,27 @@ class _SplashAnimationState extends State<SplashAnimation>
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
     );
 
     controller.addListener(() {
       if (controller.isCompleted) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const Destination()));
+        Navigator.of(context).push(PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const Destination(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final tween = Tween(begin: const Offset(0, -1), end: Offset.zero)
+                .animate(CurvedAnimation(
+                    parent: animation, curve: Curves.bounceInOut));
+            return SlideTransition(
+              position: tween,
+              child: child,
+            );
+          },
+        ));
 
         Timer(const Duration(milliseconds: 500), () {
-          controller.reverse();
+          controller.reset();
         });
       }
     });
