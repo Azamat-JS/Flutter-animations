@@ -15,10 +15,28 @@ class _BouncingBallAnimationState extends State<BouncingBallAnimation> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            // Need Ball
+            CustomPaint(
+              size: const Size(200, 200),
+              painter: BouncingBallPainter(),
+            )
           ],
         ),
       ),
     );
+  }
+}
+
+class BouncingBallPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint();
+    paint.color = Colors.red;
+    paint.style = PaintingStyle.fill;
+    canvas.drawCircle(Offset(size.width / 2, 0), 20, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
