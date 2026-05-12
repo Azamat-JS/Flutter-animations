@@ -7,7 +7,32 @@ class BouncingBallAnimation extends StatefulWidget {
   State<BouncingBallAnimation> createState() => _BouncingBallAnimationState();
 }
 
-class _BouncingBallAnimationState extends State<BouncingBallAnimation> {
+class _BouncingBallAnimationState extends State<BouncingBallAnimation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+  late Animation<double> animation;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    animation = Tween<double>(begin: 0, end: 1).animate(controller);
+
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        controller.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        controller.forward();
+      }
+    });
+
+    controller.forward();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,9 +40,12 @@ class _BouncingBallAnimationState extends State<BouncingBallAnimation> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            CustomPaint(
-              size: const Size(200, 200),
-              painter: BouncingBallPainter(),
+            AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) => CustomPaint(
+                size: const Size(200, 400),
+                painter: BouncingBallPainter(animation.value),
+              ),
             )
           ],
         ),
@@ -27,12 +55,17 @@ class _BouncingBallAnimationState extends State<BouncingBallAnimation> {
 }
 
 class BouncingBallPainter extends CustomPainter {
+  final double animationValue;
+  BouncingBallPainter(this.animationValue);
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint();
     paint.color = Colors.red;
     paint.style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(size.width / 2, 0), 20, paint);
+    canvas.drawCircle(
+        Offset(size.width / 1, size.height - (size.height * animationValue)),
+        25,
+        paint);
   }
 
   @override
